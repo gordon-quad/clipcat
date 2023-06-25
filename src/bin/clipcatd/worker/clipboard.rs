@@ -82,7 +82,9 @@ impl ClipboardWorker {
                 }
 
                 let data = ClipboardData::from(event);
-                self.clipboard_manager.lock().await.insert(data.clone());
+                let id = self.clipboard_manager.lock().await.insert(data.clone());
+                let _ = self.clipboard_manager.lock().await.mark_as_primary(id).await;
+                let _ = self.clipboard_manager.lock().await.mark_as_clipboard(id).await;
                 let _ = self.history_manager.lock().await.put(&data);
             }
         }
